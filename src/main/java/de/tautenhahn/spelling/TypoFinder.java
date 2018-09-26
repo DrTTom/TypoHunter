@@ -27,7 +27,10 @@ public class TypoFinder
 
   private final List<String> findings = new ArrayList<>();
 
-  private static int LINE_LIMIT = 300;
+  /**
+   * Assuming that lines longer than that are nor intended to be ever read by humans.
+   */
+  private static final int LINE_LIMIT = 300;
 
   static
   {
@@ -100,37 +103,30 @@ public class TypoFinder
   private void assertNotPresent(String typo, String line, String lowerLine, Path p, int lineNumber)
   {
     int pos = lowerLine.indexOf(typo);
-    if (pos != -1)
+    if (pos != -1 && isWord(pos, typo.length(), line))
     {
-      if (isWord(pos, typo.length(), line))
+      for ( String allowed : allowedPhrases )
       {
-        for ( String allowed : allowedPhrases )
+        int apos = line.indexOf(allowed);
+        if (apos != -1 && apos <= pos && apos + allowed.length() >= pos + typo.length())
         {
-          int apos = line.indexOf(allowed);
-          if (apos != -1 && apos <= pos && apos + allowed.length() >= pos + typo.length())
-          {
-            return;
-          }
+          return;
         }
-        findings.add("Typo '" + typo + "' in " + p + ", line " + lineNumber + ": " + line);
       }
+      findings.add("Typo '" + typo + "' in " + p + ", line " + lineNumber + ": " + line);
     }
   }
 
   private boolean isWord(int pos, int length, String line)
   {
     char prev = pos > 0 ? line.charAt(pos - 1) : ' ';
-    boolean startsWithBoundary = !Character.isLetter(prev)
-                                 || Character.isLowerCase(prev) && Character.isUpperCase(line.charAt(pos));
-    if (!startsWithBoundary)
+    if (!marksWordBoundary(prev, line.charAt(pos), prev))
     {
       return false;
     }
     int next = pos + length;
     char following = next < line.length() ? line.charAt(next) : ' ';
-    boolean endsWithBoundary = !Character.isLetter(following) || Character.isLowerCase(line.charAt(next - 1))
-                                                                 && Character.isUpperCase(following);
-    if (!endsWithBoundary)
+    if (!marksWordBoundary(line.charAt(next - 1), following, following))
     {
       return false;
     }
@@ -147,6 +143,11 @@ public class TypoFinder
       }
     }
     return true;
+  }
+
+  private boolean marksWordBoundary(char first, char second, char outer)
+  {
+    return !Character.isLetter(outer) || Character.isLowerCase(first) && Character.isUpperCase(second);
   }
 
   /**
