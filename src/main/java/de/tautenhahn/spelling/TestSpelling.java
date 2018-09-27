@@ -21,6 +21,7 @@ import org.junit.Test;
 public class TestSpelling
 {
 
+  // NO-SPELLCHECK
   private static final String[] ALLOWED_PHRASES = {"Sass"};
 
   /**
@@ -35,6 +36,7 @@ public class TestSpelling
     Files.walk(baseDir)
          .filter(this::toBeChecked)
          .filter(p -> !p.toFile().isDirectory())
+         .parallel()
          .forEach(finder::check);
     return finder.getFindings();
   }
@@ -44,6 +46,7 @@ public class TestSpelling
   {
     String fullName = p.toString();
     List<String> extensions = Arrays.asList(".java",
+                                            ".md",
                                             ".txt",
                                             ".properties",
                                             ".jsf",
@@ -67,6 +70,7 @@ public class TestSpelling
   public void test() throws IOException
   {
     List<String> typoList = checkAllFiles(Paths.get("."));
+    typoList.forEach(System.out::println);
     assertThat("Findings", typoList, empty());
   }
 

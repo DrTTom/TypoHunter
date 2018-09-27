@@ -5,10 +5,13 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.Set;
 
 
 /**
@@ -21,7 +24,14 @@ public class TypoFinder
 
   private static final String STOP_WORD = "NO-SPELLCHECK";
 
-  private static final List<String> BLACKLIST;
+
+  private static final Set<String> BLACKSET = new HashSet<>();
+
+  static
+  {
+    readTypoList("/typos_de.list", BLACKSET);
+    readTypoList("/typos.list", BLACKSET);
+  }
 
   private final List<String> allowedPhrases = new ArrayList<>();
 
@@ -32,16 +42,7 @@ public class TypoFinder
    */
   private static final int LINE_LIMIT = 300;
 
-  static
-  {
-    List<String> typos = new ArrayList<>();
-    readTypoList("/typos_de.list", typos);
-    readTypoList("/typos.list", typos);
-    BLACKLIST = Collections.unmodifiableList(typos);
-  }
-
-
-  private static void readTypoList(String name, List<String> typos)
+  private static void readTypoList(String name, Collection<String> typos)
   {
     try (InputStream ins = TypoFinder.class.getResourceAsStream(name); Scanner s = new Scanner(ins, "UTF-8"))
     {
@@ -87,11 +88,7 @@ public class TypoFinder
         {
           break;
         }
-        String lower = line.toLowerCase(Locale.GERMAN); // for English texts OK as well.
-        for ( String typo : BLACKLIST )
-        {
-          assertNotPresent(typo, line, lower, path, lineNumber);
-        }
+        check(path, lineNumber, line);
       }
     }
     catch (IOException e)
@@ -100,54 +97,104 @@ public class TypoFinder
     }
   }
 
-  private void assertNotPresent(String typo, String line, String lowerLine, Path p, int lineNumber)
+  /** Just the states while finding words */
+  enum State
   {
-    int pos = lowerLine.indexOf(typo);
-    if (pos != -1 && isWord(pos, typo.length(), line))
+    /** not in a word */
+    OUTSIDE_WORD,
+    /** in word with upper cases so far */
+    IN_UPPERCASE,
+    /** in word with lower case letter seen last */
+    IN_LOWERCASE
+  }
+
+  void check(Path path, int lineNumber, String line)
+  {
+    int pos = 0;
+    int[] wordStart = new int[1];
+    State state = State.OUTSIDE_WORD;
+    while (pos < line.length())
+    {
+      char c = line.charAt(pos);
+      switch (state)
+      {
+        case OUTSIDE_WORD:
+          state = startWord(pos, wordStart, c);
+          break;
+        case IN_UPPERCASE:
+          state = continueWord(path, lineNumber, line, pos, wordStart, c);
+          break;
+        case IN_LOWERCASE:
+          state = continueLowerCaseWord(path, lineNumber, line, pos, wordStart, c);
+          break;
+        default:
+          throw new IllegalStateException("unimplemented case: " + state);
+      }
+      pos++;
+    }
+    if (state != State.OUTSIDE_WORD)
+    {
+      checkWord(path, lineNumber, line, wordStart[0], pos);
+    }
+  }
+
+  private State continueLowerCaseWord(Path path,
+                                      int lineNumber,
+                                      String line,
+                                      int pos,
+                                      int[] wordStart,
+                                      char c)
+  {
+    if (Character.isLowerCase(c))
+    {
+      return State.IN_LOWERCASE;
+    }
+    checkWord(path, lineNumber, line, wordStart[0], pos);
+    wordStart[0] = pos;
+    return Character.isUpperCase(c) ? State.IN_UPPERCASE : State.OUTSIDE_WORD;
+  }
+
+  private State continueWord(Path path, int lineNumber, String line, int pos, int[] wordStart, char c)
+  {
+    if (Character.isLetter(c))
+    {
+      return nextState(c);
+    }
+    checkWord(path, lineNumber, line, wordStart[0], pos);
+    return State.OUTSIDE_WORD;
+  }
+
+  private State startWord(int pos, int[] wordStart, char c)
+  {
+    if (Character.isLetter(c))
+    {
+      wordStart[0] = pos;
+      return nextState(c);
+    }
+    return State.OUTSIDE_WORD;
+  }
+
+  private State nextState(char c)
+  {
+    return Character.isUpperCase(c) ? State.IN_UPPERCASE : State.IN_LOWERCASE;
+  }
+
+  private void checkWord(Path p, int lineNumber, String line, int wordStart, int pos)
+  {
+    String word = line.substring(wordStart, pos).toLowerCase(Locale.GERMAN); // covers English letters too
+    if (BLACKSET.contains(word))
     {
       for ( String allowed : allowedPhrases )
       {
         int apos = line.indexOf(allowed);
-        if (apos != -1 && apos <= pos && apos + allowed.length() >= pos + typo.length())
+        if (apos != -1 && apos <= wordStart && apos + allowed.length() >= pos)
         {
           return;
         }
       }
-      findings.add("Typo '" + typo + "' in " + p + ", line " + lineNumber + ": " + line);
+      findings.add("Typo '" + word + "' in " + p + ", line " + lineNumber + ": " + line);
     }
-  }
 
-  private boolean isWord(int pos, int length, String line)
-  {
-    char prev = pos > 0 ? line.charAt(pos - 1) : ' ';
-    if (!marksWordBoundary(prev, line.charAt(pos), prev))
-    {
-      return false;
-    }
-    int next = pos + length;
-    char following = next < line.length() ? line.charAt(next) : ' ';
-    if (!marksWordBoundary(line.charAt(next - 1), following, following))
-    {
-      return false;
-    }
-    boolean lowerCaseInWord = false;
-    for ( int i = pos ; i < pos + length ; i++ )
-    {
-      if (Character.isLowerCase(line.charAt(i)))
-      {
-        lowerCaseInWord = true;
-      }
-      else if (lowerCaseInWord)
-      {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private boolean marksWordBoundary(char first, char second, char outer)
-  {
-    return !Character.isLetter(outer) || Character.isLowerCase(first) && Character.isUpperCase(second);
   }
 
   /**
