@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.TreeSet;
 
 
 /**
@@ -29,13 +30,16 @@ public class TypoFinder
 
   static
   {
-    readTypoList("/typos_de.list", BLACKSET);
-    readTypoList("/typos.list", BLACKSET);
+    readTypoList("typos_de.list", BLACKSET);
+    readTypoList("typos_en.list", BLACKSET);
+    readTypoList("own_findings.list", BLACKSET);
   }
 
   private final List<String> allowedPhrases = new ArrayList<>();
 
   private final List<String> findings = new ArrayList<>();
+
+  private final Collection<String> words = new TreeSet<>();
 
   /**
    * Assuming that lines longer than that are nor intended to be ever read by humans.
@@ -193,6 +197,7 @@ public class TypoFinder
         }
       }
       findings.add("Typo '" + word + "' in " + p + ", line " + lineNumber + ": " + line);
+      words.add(word);
     }
 
   }
@@ -203,5 +208,14 @@ public class TypoFinder
   public List<String> getFindings()
   {
     return Collections.unmodifiableList(findings);
+  }
+
+
+  /**
+   * Returns a set of found words which are probably misspelled.
+   */
+  public Collection<String> getWords()
+  {
+    return words;
   }
 }

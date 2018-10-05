@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -20,6 +22,22 @@ import org.junit.Test;
  */
 public class TestSpelling
 {
+
+  private static final Logger LOG = LoggerFactory.getLogger(TestSpelling.class);
+
+  private static final List<String> EXTENSIONS = Arrays.asList(".java",
+                                                               ".md",
+                                                               ".txt",
+                                                               ".properties",
+                                                               ".jsf",
+                                                               ".xml",
+                                                               ".json",
+                                                               ".html",
+                                                               ".htm",
+                                                               ".xhtml",
+                                                               ".js");
+
+  private static final List<String> IGNORED = Arrays.asList("/build/", "/node_modules/", "/help_de/");
 
   // NO-SPELLCHECK
   private static final String[] ALLOWED_PHRASES = {"Sass"};
@@ -38,27 +56,20 @@ public class TestSpelling
          .filter(p -> !p.toFile().isDirectory())
          .parallel()
          .forEach(finder::check);
+    LOG.debug("Found misspelled words: {}", finder.getWords());
     return finder.getFindings();
   }
 
-
-  private boolean toBeChecked(Path p)
+  /**
+   * Returns true if file should be checked.
+   *
+   * @param p
+   */
+  protected boolean toBeChecked(Path p)
   {
     String fullName = p.toString();
-    List<String> extensions = Arrays.asList(".java",
-                                            ".md",
-                                            ".txt",
-                                            ".properties",
-                                            ".jsf",
-                                            ".xml",
-                                            ".json",
-                                            ".html",
-                                            ".htm",
-                                            ".xhtml",
-                                            ".js");
-    List<String> ignored = Arrays.asList("/build/", "/node_modules/", "/help_de/");
-    return extensions.stream().anyMatch(s -> fullName.endsWith(s))
-           && ignored.stream().noneMatch(n -> fullName.contains(n));
+    return EXTENSIONS.stream().anyMatch(s -> fullName.endsWith(s))
+           && IGNORED.stream().noneMatch(n -> fullName.contains(n)) && Files.isRegularFile(p);
   }
 
   /**
@@ -67,11 +78,12 @@ public class TestSpelling
    * @throws IOException
    */
   @Test
-  public void test() throws IOException
+  public void findTypos() throws IOException
   {
-    List<String> typoList = checkAllFiles(Paths.get("."));
-    typoList.forEach(System.out::println);
-    assertThat("Findings", typoList, empty());
+    String dir = System.getProperty("basedir", ".");
+    List<String> typoList = checkAllFiles(Paths.get(dir));
+    typoList.forEach(LOG::info);
+    assertThat("Found problems", typoList, empty());
   }
 
 }
