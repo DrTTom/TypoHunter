@@ -4,11 +4,8 @@ import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -25,52 +22,8 @@ public class TestSpelling
 
   private static final Logger LOG = LoggerFactory.getLogger(TestSpelling.class);
 
-  private static final List<String> EXTENSIONS = Arrays.asList(".java",
-                                                               ".md",
-                                                               ".txt",
-                                                               ".properties",
-                                                               ".jsf",
-                                                               ".xml",
-                                                               ".json",
-                                                               ".html",
-                                                               ".htm",
-                                                               ".xhtml",
-                                                               ".js");
-
-  private static final List<String> IGNORED = Arrays.asList("/build/", "/node_modules/", "/help_de/");
-
   // NO-SPELLCHECK
   private static final String[] ALLOWED_PHRASES = {"Sass"};
-
-  /**
-   * Call the test for all suitable files
-   *
-   * @throws IOException
-   */
-  private List<String> checkAllFiles(Path baseDir) throws IOException
-  {
-    TypoFinder finder = new TypoFinder();
-    finder.addAllowedPhrases(ALLOWED_PHRASES);
-    Files.walk(baseDir)
-         .filter(this::toBeChecked)
-         .filter(p -> !p.toFile().isDirectory())
-         .parallel()
-         .forEach(finder::check);
-    LOG.debug("Found misspelled words: {}", finder.getWords());
-    return finder.getFindings();
-  }
-
-  /**
-   * Returns true if file should be checked.
-   *
-   * @param p
-   */
-  protected boolean toBeChecked(Path p)
-  {
-    String fullName = p.toString();
-    return EXTENSIONS.stream().anyMatch(s -> fullName.endsWith(s))
-           && IGNORED.stream().noneMatch(n -> fullName.contains(n)) && Files.isRegularFile(p);
-  }
 
   /**
    * Check for typos before they become embarrassing.
@@ -81,8 +34,14 @@ public class TestSpelling
   public void findTypos() throws IOException
   {
     String dir = System.getProperty("basedir", ".");
-    List<String> typoList = checkAllFiles(Paths.get(dir));
-    typoList.forEach(LOG::info);
+    TypoFinder finder = new TypoFinder();
+    finder.addAllowedPhrases(ALLOWED_PHRASES);
+
+    new HandleDirTree(finder).checkAllFiles(Paths.get(dir));
+
+    LOG.debug("Found misspelled words: {}", finder.getWords());
+    Collection<String> typoList = finder.getFindings();
+    typoList.forEach(LOG::warn);
     assertThat("Found problems", typoList, empty());
   }
 
