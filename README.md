@@ -25,6 +25,10 @@ For Gradle projects, make sure `mavenLoval` repository is enabled. Add the test 
 to your tests.
 
 To check a project once, just use the command line application. At the moment, it takes as single argument
-the path to your project and will report its findings on standard out.
+the path to your project and will report its findings on standard out. Just call
 
-Do not hesitate to use this check and find some of your typos before others do!
+```
+java -jar TypoHunter-0.1.jar
+```
+
+Remember, having read so far, you do no longer have an excuse to have any of the most usual typos in your code!
