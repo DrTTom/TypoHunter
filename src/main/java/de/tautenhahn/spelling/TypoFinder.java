@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 
 
 /**
@@ -20,7 +21,7 @@ import java.util.TreeSet;
  * ensure correct spelling but may find some typos before others do. Contrary to spell checkers, this class
  * explicitly targets expressions which are not meant to be a text in natural language.
  */
-public class TypoFinder
+public class TypoFinder implements Consumer<Path>
 {
 
   private static final String STOP_WORD = "NO-SPELLCHECK";
@@ -76,7 +77,8 @@ public class TypoFinder
    *
    * @param path must represent a text file
    */
-  public void check(Path path)
+  @Override
+  public void accept(Path path)
   {
     try (Scanner s = new Scanner(path, "UTF-8"))
     {
