@@ -2,6 +2,7 @@ package de.tautenhahn.spelling;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 
@@ -10,10 +11,15 @@ import java.nio.file.Paths;
  *
  * @author TT
  */
-public class Main
+public final class Main
 {
 
   static final PrintStream DEST = System.out;
+
+  private Main()
+  {
+    // no instance
+  }
 
   /**
    * Call typo finder for specified directory tree. Write findings to standard out.
@@ -29,8 +35,11 @@ public class Main
       base = args[0];
     }
     TypoFinder finder = new TypoFinder();
-    new HandleDirTree(finder).checkAllFiles(Paths.get(base));
+    Path baseDir = Paths.get(base);
+    new HandleDirTree(finder).checkAllFiles(baseDir);
     finder.getFindings().forEach(DEST::println);
-    DEST.println("\n Found " + finder.getFindings().size() + " potential typos in " + base);
+    DEST.println("------------------------------------------------------------------------------------");
+    DEST.println("Checked " + finder.getNumberCheckedFiles() + " files in " + baseDir.toAbsolutePath());
+    DEST.println("Found " + finder.getFindings().size() + " potential typos");
   }
 }

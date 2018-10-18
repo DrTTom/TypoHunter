@@ -40,6 +40,8 @@ public class TypoFinder implements Consumer<Path>
 
   private final List<String> findings = new ArrayList<>();
 
+  private int numberCheckedFiles = 0;
+
   private final Collection<String> words = new TreeSet<>();
 
   /**
@@ -101,6 +103,7 @@ public class TypoFinder implements Consumer<Path>
     {
       throw new IllegalArgumentException("problem reading file", e);
     }
+    numberCheckedFiles++;
   }
 
   /** Just the states while finding words */
@@ -219,5 +222,14 @@ public class TypoFinder implements Consumer<Path>
   public Collection<String> getWords()
   {
     return words;
+  }
+
+
+  /**
+   * @return the numberCheckedFiles
+   */
+  public int getNumberCheckedFiles()
+  {
+    return numberCheckedFiles;
   }
 }
