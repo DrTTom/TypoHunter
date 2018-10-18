@@ -18,7 +18,7 @@ public final class Main
 
   private Main()
   {
-    // no instance
+    // no instance needed
   }
 
   /**
@@ -27,7 +27,7 @@ public final class Main
    * @param args base directory, optional, defaults to current directory
    * @throws IOException
    */
-  public static void main(String[] args) throws IOException
+  public static void main(String... args) throws IOException
   {
     String base = ".";
     if (args.length > 0)
@@ -39,7 +39,7 @@ public final class Main
     new HandleDirTree(finder).checkAllFiles(baseDir);
     finder.getFindings().forEach(DEST::println);
     DEST.println("------------------------------------------------------------------------------------");
-    DEST.println("Checked " + finder.getNumberCheckedFiles() + " files in " + baseDir.toAbsolutePath());
+    DEST.println("Checked " + finder.getNumberCheckedFiles() + " files in " + baseDir.toRealPath());
     DEST.println("Found " + finder.getFindings().size() + " potential typos");
   }
 }

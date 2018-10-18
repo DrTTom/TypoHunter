@@ -8,6 +8,7 @@ plugins {
   id 'java'
   id 'com.github.spotbugs' version '1.6.2'
   id 'pmd'
+  id 'maven-publish'
 }
 
 pmd {
@@ -31,6 +32,12 @@ dependencies {
    compile 'org.hamcrest:hamcrest-all:1.3'
    runtime 'org.slf4j:slf4j-api:1.8.0-beta2'
 }
+jar {
+    manifest {
+        attributes 'Main-Class': 'de.tautenhahn.spelling.Main'
+    }
+}
+
 
 jar {
   manifest {
@@ -38,4 +45,12 @@ jar {
       'Main-Class': 'de.tautenhahn.spelling.Main'
     )
   }
+}
+
+publishing {
+    publications {
+        typoHunter(MavenPublication) {
+            from components.java
+        }
+    }
 }

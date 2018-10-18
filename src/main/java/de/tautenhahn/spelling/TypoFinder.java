@@ -40,7 +40,7 @@ public class TypoFinder implements Consumer<Path>
 
   private final List<String> findings = new ArrayList<>();
 
-  private int numberCheckedFiles = 0;
+  private int numberCheckedFiles;
 
   private final Collection<String> words = new TreeSet<>();
 
