@@ -6,15 +6,25 @@ buildscript {
 
 plugins {
   id 'java'
-  id 'com.github.spotbugs' version '1.6.2'
+  id 'com.github.spotbugs' version '1.6.6'
+  id 'com.github.ben-manes.versions' version '0.20.0'
   id 'pmd'
   id 'maven-publish'
 }
 
 pmd {
-    toolVersion = '6.4.0'
-    ruleSetFiles = files("pmd_config.xml")
+    toolVersion = '6.10.0'
+    ruleSets = []
+    ruleSetConfig = resources.text.fromFile("pmd_config.xml")
 }
+
+spotbugs {
+   effort = "max"
+   reportLevel = "low"
+   excludeFilter = file("findbugs-exclude.xml")
+}
+
+
 
 repositories {
    jcenter()

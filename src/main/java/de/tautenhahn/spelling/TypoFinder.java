@@ -51,7 +51,7 @@ public class TypoFinder implements Consumer<Path>
 
   private static void readTypoList(String name, Collection<String> typos)
   {
-    try (InputStream ins = TypoFinder.class.getResourceAsStream(name); Scanner s = new Scanner(ins, "UTF-8"))
+    try (InputStream insRes = TypoFinder.class.getResourceAsStream(name); Scanner s = new Scanner(insRes, "UTF-8"))
     {
       while (s.hasNext())
       {
