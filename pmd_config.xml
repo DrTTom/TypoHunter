@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="Default lza rules" xmlns="http://pmd.sf.net/ruleset/2.0.0"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ruleset name="Default lza rules" xmlns="http://pmd.sf.net/ruleset/2.0.0">
    <description>
       Shall become bos default rule set.
    </description>
@@ -138,7 +137,7 @@
    </rule>
 
    <rule ref="category/java/multithreading.xml">
-      <exclude name="UseConcurrentHashMap"></exclude> <!-- false positives -->
+      <exclude name="UseConcurrentHashMap"/> <!-- false positives -->
       <exclude name="AvoidSynchronizedAtMethodLevel" /> <!-- developer decides which block to synchronize -->
       <exclude name="AvoidUsingVolatile" /> <!-- developer decides about the need -->
    </rule>

@@ -31,9 +31,9 @@ public class TypoFinder implements Consumer<Path>
 
   static
   {
-    readTypoList("typos_de.list", BLACKSET);
-    readTypoList("typos_en.list", BLACKSET);
-    readTypoList("own_findings.list", BLACKSET);
+    readTypoList("typos_de.list");
+    readTypoList("typos_en.list");
+    readTypoList("own_findings.list");
   }
 
   private final List<String> allowedPhrases = new ArrayList<>();
@@ -49,13 +49,13 @@ public class TypoFinder implements Consumer<Path>
    */
   private static final int LINE_LIMIT = 300;
 
-  private static void readTypoList(String name, Collection<String> typos)
+  private static void readTypoList(String name)
   {
     try (InputStream insRes = TypoFinder.class.getResourceAsStream(name); Scanner s = new Scanner(insRes, "UTF-8"))
     {
       while (s.hasNext())
       {
-        typos.add(s.next());
+        ((Collection<String>) TypoFinder.BLACKSET).add(s.next());
       }
     }
     catch (IOException e)

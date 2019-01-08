@@ -35,7 +35,7 @@ public class HandleDirTree
   /**
    * Creates instance.
    *
-   * @param consumer
+   * @param consumer will be calles with each method
    */
   public HandleDirTree(Consumer<Path> consumer)
   {
@@ -45,7 +45,7 @@ public class HandleDirTree
   /**
    * Call the test for all suitable files
    *
-   * @throws IOException
+   * @throws IOException guess why
    */
   public void checkAllFiles(Path baseDir) throws IOException
   {
@@ -53,19 +53,19 @@ public class HandleDirTree
          .filter(this::toBeChecked)
          .filter(p -> p.toFile().isFile())
          .parallel()
-         .forEach(consumer::accept);
+         .forEach(consumer);
   }
 
   /**
    * Returns true if file should be checked.
    *
-   * @param p
+   * @param p path to check or not
    */
   protected boolean toBeChecked(Path p)
   {
     String fullName = p.toString();
-    return EXTENSIONS.stream().anyMatch(s -> fullName.endsWith(s))
-           && IGNORED.stream().noneMatch(n -> fullName.contains(n)) && Files.isRegularFile(p);
+    return EXTENSIONS.stream().anyMatch(fullName::endsWith)
+           && IGNORED.stream().noneMatch(fullName::contains) && Files.isRegularFile(p);
   }
 
 

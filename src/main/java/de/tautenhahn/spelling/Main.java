@@ -25,7 +25,7 @@ public final class Main
    * Call typo finder for specified directory tree. Write findings to standard out.
    *
    * @param args base directory, optional, defaults to current directory
-   * @throws IOException
+   * @throws IOException guess why
    */
   public static void main(String... args) throws IOException
   {
