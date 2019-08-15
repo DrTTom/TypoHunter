@@ -37,10 +37,13 @@ to your tests.
 
 Remember, having read so far, you do no longer have an excuse to have any of the most usual typos in your code!
 
-** Coming ~~soon~~ when requested:**
+** Coming when requested:**
 
 - pom, Repository
 - more potential typos
 - configurable file filter
 - configurable white list
+- table-like output
+- recognition of base64
 - support for other languages?
+- finding politically incorrect stuff
