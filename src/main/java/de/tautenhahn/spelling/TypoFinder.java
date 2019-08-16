@@ -2,6 +2,7 @@ package de.tautenhahn.spelling;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +39,7 @@ public class TypoFinder implements Consumer<Path>
 
   private final List<String> allowedPhrases = new ArrayList<>();
 
-  private final List<String> findings = new ArrayList<>();
+  private final List<Finding> findings = new ArrayList<>();
 
   private int numberCheckedFiles;
 
@@ -51,7 +52,8 @@ public class TypoFinder implements Consumer<Path>
 
   private static void readTypoList(String name)
   {
-    try (InputStream insRes = TypoFinder.class.getResourceAsStream(name); Scanner s = new Scanner(insRes, "UTF-8"))
+    try (InputStream insRes = TypoFinder.class.getResourceAsStream(name); Scanner s = new Scanner(insRes,
+        StandardCharsets.UTF_8))
     {
       while (s.hasNext())
       {
@@ -82,7 +84,7 @@ public class TypoFinder implements Consumer<Path>
   @Override
   public void accept(Path path)
   {
-    try (Scanner s = new Scanner(path, "UTF-8"))
+    try (Scanner s = new Scanner(path, StandardCharsets.UTF_8))
     {
 
       for ( int lineNumber = 1 ; s.hasNext() ; lineNumber++ )
@@ -201,7 +203,7 @@ public class TypoFinder implements Consumer<Path>
           return;
         }
       }
-      findings.add("Typo '" + word + "' in " + p + ", line " + lineNumber + ": " + line);
+      findings.add(new Finding(word,  line, p, lineNumber));
       words.add(word);
     }
 
@@ -210,7 +212,7 @@ public class TypoFinder implements Consumer<Path>
   /**
    * Returns the list of typos found so far.
    */
-  public List<String> getFindings()
+  public List<Finding> getFindings()
   {
     return Collections.unmodifiableList(findings);
   }

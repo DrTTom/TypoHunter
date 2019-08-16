@@ -1,12 +1,10 @@
 package de.tautenhahn.spelling;
 
-import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-
-import org.junit.Test;
-
 
 /**
  * Unit test for typo finder.
@@ -16,30 +14,29 @@ import org.junit.Test;
 public class TestTypoFinder
 {
 
-  /**
-   * Asserts that typos can be found in a line of text.
-   */
-  @Test
-  public void handleOneLine()
-  {
-    TypoFinder systemUnderTest = new TypoFinder();
-    systemUnderTest.addAllowedPhrases("tetex");
-    // NO-SPELLCHECK
-    String line = "This is a text with some StrangeFormattedStuff and a typo, namely: aaachen";
-    systemUnderTest.check(null, 1, line);
-    assertThat("findings",
-               systemUnderTest.getFindings(),
-               contains("Typo 'aaachen' in null, line 1: " + line));
-  }
+    /**
+     * Asserts that typos can be found in a line of text.
+     */
+    @Test
+    public void handleOneLine()
+    {
+        TypoFinder systemUnderTest = new TypoFinder();
+        systemUnderTest.addAllowedPhrases("tetex");
+        // NO-SPELLCHECK
+        String line = "This is a text with some StrangeFormattedStuff and a typo, namely: aaachen";
+        systemUnderTest.check(null, 1, line);
+        assertThat(systemUnderTest.getFindings()).extracting(Object::toString).
+            contains("   aaachen      in line   1: " + line + " in file null");
+    }
 
-  /**
-   * Simple smoke test just to keep coverage up.
-   * 
-   * @throws IOException
-   */
-  @Test
-  public void callMain() throws IOException
-  {
-    Main.main(".");
-  }
+    /**
+     * Simple smoke test just to keep coverage up.
+     *
+     * @throws IOException in case of problem reading files
+     */
+    @Test
+    public void callMain() throws IOException
+    {
+        Main.main(".");
+    }
 }
