@@ -37,6 +37,11 @@ public final class Main
         TypoFinder finder = new TypoFinder();
         Path baseDir = Paths.get(base);
         new HandleDirTree(finder).checkAllFiles(baseDir);
+        writeOutput(finder, baseDir);
+    }
+
+    private static void writeOutput(TypoFinder finder, Path baseDir) throws IOException
+    {
         Path currentFile = null;
         for (Finding f : finder.getFindings())
         {
