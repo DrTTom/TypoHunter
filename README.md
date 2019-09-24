@@ -7,6 +7,7 @@ The massive use of abbreviations makes it awkward to use a traditional spell che
 Working with black lists, this test can not assure correct spelling, but
 - produces almost no false positives
 - can work even in documents / file trees with mixed language
+- excludes expressions which look like HEX or base64 to avoid false positives
 - has still found lots of typos in each project I ever ran it on
 
 Currently, it finds typical English and German typos.
@@ -43,6 +44,5 @@ Remember, having read so far, you do no longer have an excuse to have any of the
 - more potential typos
 - configurable file filter
 - configurable white list
-- recognition of base64
 - support for other languages?
 - finding politically incorrect stuff

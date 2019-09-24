@@ -30,6 +30,25 @@ public class TestTypoFinder
     }
 
     /**
+     * Asserts that a typo in some obviously hex or base64 expression is ignored.
+     */
+    @Test
+    public void ignoreNumeric()
+    {
+        TypoFinder systemUnderTest = new TypoFinder();
+        String hex = "463724562fabe23ffabced";
+        systemUnderTest.check(null, 1, hex);
+        assertThat(systemUnderTest.getFindings()).isEmpty();
+
+        String base64 = "0Mxcafabe===";
+        systemUnderTest.check(null, 2, base64);
+        assertThat(systemUnderTest.getFindings()).isEmpty();
+
+        systemUnderTest.check(null, 3, "463724562fabe23ffabced fabe");
+        assertThat(systemUnderTest.getFindings()).hasSize(1);
+    }
+
+    /**
      * Simple smoke test just to keep coverage up.
      *
      * @throws IOException in case of problem reading files
