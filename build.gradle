@@ -6,25 +6,11 @@ buildscript {
 
 plugins {
   id 'java'
-  id 'com.github.spotbugs' version '2.0.0'
-  id 'com.github.ben-manes.versions' version '0.25.0'
+  id 'com.github.spotbugs' version '2.0.1'
+  id 'com.github.ben-manes.versions' version '0.27.0'
   id 'pmd'
   id 'maven-publish'
 }
-
-pmd {
-    toolVersion = '6.17.0'
-    ruleSets = []
-    ruleSetConfig = resources.text.fromFile("pmd_config.xml")
-}
-
-spotbugs {
-   effort = "max"
-   reportLevel = "low"
-   excludeFilter = file("findbugs-exclude.xml")
-}
-
-
 
 repositories {
    jcenter()
@@ -34,17 +20,29 @@ version = '0.1'
 group = 'de.tautenhahn.typohunter'
 
 dependencies {
-   implementation 'org.slf4j:slf4j-simple:2.0.0-alpha0'
-   implementation 'org.assertj:assertj-core:3.13.2'
+   implementation 'org.slf4j:slf4j-api:2.0.0-alpha1'
+   implementation 'org.assertj:assertj-core:3.14.0'
    implementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
 
-   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
+   runtimeOnly 'org.slf4j:slf4j-simple:2.0.0-alpha1'
 
-   runtime 'org.slf4j:slf4j-api:2.0.0-alpha0'
+   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
 }
 
 test{
     useJUnitPlatform()
+}
+
+pmd {
+    toolVersion = '6.19.0'
+    ruleSets = []
+    ruleSetConfig = resources.text.fromFile("pmd_config.xml")
+}
+
+spotbugs {
+   effort = "max"
+   reportLevel = "low"
+   excludeFilter = file("findbugs-exclude.xml")
 }
 
 jar {
