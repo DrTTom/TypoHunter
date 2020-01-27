@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="Default lza rules" xmlns="http://pmd.sf.net/ruleset/2.0.0">
+<ruleset name="some hopefully sensible rule set" xmlns="http://pmd.sf.net/ruleset/2.0.0">
    <description>
       Shall become bos default rule set.
    </description>

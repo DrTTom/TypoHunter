@@ -6,7 +6,7 @@ buildscript {
 
 plugins {
   id 'java'
-  id 'com.github.spotbugs' version '2.0.1'
+  id 'com.github.spotbugs' version '3.0.0'
   id 'com.github.ben-manes.versions' version '0.27.0'
   id 'pmd'
   id 'maven-publish'
@@ -22,11 +22,11 @@ group = 'de.tautenhahn.typohunter'
 dependencies {
    implementation 'org.slf4j:slf4j-api:2.0.0-alpha1'
    implementation 'org.assertj:assertj-core:3.14.0'
-   implementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
+   implementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
 
    runtimeOnly 'org.slf4j:slf4j-simple:2.0.0-alpha1'
 
-   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
+   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
 }
 
 test{
@@ -34,7 +34,7 @@ test{
 }
 
 pmd {
-    toolVersion = '6.19.0'
+    toolVersion = '6.21.0'
     ruleSets = []
     ruleSetConfig = resources.text.fromFile("pmd_config.xml")
 }
