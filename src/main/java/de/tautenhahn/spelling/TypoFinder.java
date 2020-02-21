@@ -15,6 +15,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,7 +47,7 @@ public class TypoFinder implements Consumer<Path>
     private final Collection<String> words = new TreeSet<>();
 
     /**
-     * Assuming that lines longer than that are nor intended to be ever read by humans.
+     * Assuming that lines longer than that are not intended to be ever read by humans.
      */
     private static final int LINE_LIMIT = 300;
 
@@ -85,10 +86,11 @@ public class TypoFinder implements Consumer<Path>
     {
         try (Scanner s = new Scanner(path, StandardCharsets.UTF_8))
         {
+            Function<String, String> preProcessor = PreProcessor.forPath(path);
 
             for (int lineNumber = 1; s.hasNext(); lineNumber++)
             {
-                String line = s.nextLine();
+                String line = preProcessor.apply(s.nextLine());
                 if (line.length() > LINE_LIMIT)
                 {
                     continue;

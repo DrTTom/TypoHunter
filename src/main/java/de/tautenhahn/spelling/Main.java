@@ -34,6 +34,11 @@ public final class Main
         {
             base = args[0];
         }
+        if (args.length > 1)
+        {
+            PreProcessor.isActive = "-ignoreKeys".equals(args[1]);
+        }
+
         TypoFinder finder = new TypoFinder();
         Path baseDir = Paths.get(base);
         new HandleDirTree(finder).checkAllFiles(baseDir);

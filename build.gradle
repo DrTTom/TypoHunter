@@ -21,7 +21,7 @@ group = 'de.tautenhahn.typohunter'
 
 dependencies {
    implementation 'org.slf4j:slf4j-api:2.0.0-alpha1'
-   implementation 'org.assertj:assertj-core:3.14.0'
+   implementation 'org.assertj:assertj-core:3.15.0'
    implementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
 
    runtimeOnly 'org.slf4j:slf4j-simple:2.0.0-alpha1'
@@ -40,6 +40,7 @@ pmd {
 }
 
 spotbugs {
+   toolVersion='4.0.0'
    effort = "max"
    reportLevel = "low"
    excludeFilter = file("findbugs-exclude.xml")
