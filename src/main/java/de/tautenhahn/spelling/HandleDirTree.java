@@ -44,7 +44,8 @@ public class HandleDirTree
 
   /**
    * Call the test for all suitable files
-   *
+   * 
+   * @param baseDir root of the search tree
    * @throws IOException guess why
    */
   public void checkAllFiles(Path baseDir) throws IOException
@@ -60,12 +61,13 @@ public class HandleDirTree
    * Returns true if file should be checked.
    *
    * @param p path to check or not
+   * @return true if file should be checked
    */
   protected boolean toBeChecked(Path p)
   {
     String fullName = p.toString();
-    return EXTENSIONS.stream().anyMatch(fullName::endsWith)
-           && IGNORED.stream().noneMatch(fullName::contains) && Files.isRegularFile(p);
+    return EXTENSIONS.stream().anyMatch(fullName::endsWith) && IGNORED.stream().noneMatch(fullName::contains)
+           && Files.isRegularFile(p);
   }
 
 
