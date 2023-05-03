@@ -238,7 +238,7 @@ public class TypoFinder implements Consumer<Path>
      */
     public Collection<String> getWords()
     {
-        return words;
+        return Collections.unmodifiableCollection(words);
     }
 
     /**
